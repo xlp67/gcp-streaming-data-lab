@@ -26,13 +26,7 @@ jobs:
       - name: "Build and Push Image via Cloud Build"
         id: cloud-build
         run: |
-          TAG=$(git rev-parse --short HEAD)
-          IMAGE_URL="${{ env.REGION }}-docker.pkg.dev/${{ vars.GOOGLE_PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:$TAG"
-          echo "Building image in project: ${{ vars.GOOGLE_PROJECT_ID }}"
-          echo "Full Image URL: $IMAGE_URL"
-          gcloud builds submit --tag "$IMAGE_URL" .
-          echo "IMAGE_TAG=$TAG" >> $GITHUB_ENV
-
+          gcloud builds list
 
       - name: "Setup Terraform"
         uses: hashicorp/setup-terraform@v2
@@ -46,5 +40,5 @@ jobs:
             -var="project_id=${{ vars.GOOGLE_PROJECT_ID }}" \
             -var="region=${{ env.REGION }}" \
             -var="image_tag=${{ env.IMAGE_TAG }}" \
-            -var="container_spec_gcs_path=gs://test-bucket-xlp67/templates/job-${{ env.IMAGE_TAG }}.json"
+            -var="container_spec_gcs_path=gs://test-bucket-xlp67/templates/job-${{env.IMAGE_TAG }}.json"
 
