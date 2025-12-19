@@ -2,4 +2,3 @@
 *lock*
 *.terraform
 config/*
-.github/*
