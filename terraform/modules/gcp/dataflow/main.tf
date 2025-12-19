@@ -1,8 +1,14 @@
-resource "google_dataflow_flex_template_job" "big_data_job" {
-  project                      = var.project_id
-  provider                     = google-beta
-  name                         = var.dataflow_flex_template_job_name
-  region                       = var.region
-  container_spec_gcs_path      = "gs://${var.bucket_name}/templates/google_dataflow_flex_template_job.json"
-  skip_wait_on_job_termination = true
+resource "google_storage_bucket_object" "metadata_json" {
+  name    = "templates/job-${var.image_tag}.json"
+  bucket  = "test-bucket-xlp67"
+  content = jsonencode({
+    "image": "us-central1-docker.pkg.dev/${var.project_id}/dataflow-repo/streaming-beam-job:${var.image_tag}",
+    "sdk_info": {"language": "PYTHON"}
+  })
+}
+
+resource "google_dataflow_flex_template_job" "job" {
+  name                    = "streaming-job-${var.image_tag}"
+  container_spec_gcs_path = "gs://${google_storage_bucket_object.metadata_json.bucket}/${google_storage_bucket_object.metadata_json.name}"
+  depends_on = [google_storage_bucket_object.metadata_json]
 }
