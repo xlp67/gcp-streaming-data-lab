@@ -21,16 +21,12 @@ module "pubsub" {
 }
 module "dataflow" {
   source                           = "./modules/gcp/dataflow"
-  project_id                       = var.project_id
-  dataflow_container_spec_gcs_path = "gs://${module.storage_bucket.bucket_name}/dataflow-flex-template-job/template.json"
+  dataflow_flex_template_job_name  = "test-dataflow-job"
   dataflow_subscription_id         = module.pubsub.pubsub_subscription_id
-  dataflow_flex_template_job_name  = "test-flex-template-job"
-  region                           = var.region
-  bucket_name                      = module.storage_bucket.bucket_name
-  depends_on                       = [module.storage_bucket, module.pubsub]
+  region                          = var.region
+  image_tag                       = var.image_tag
+  dataflow_container_spec_gcs_path = var.dataflow_container_spec_gcs_path
 }
-
-
 
 module "bigtable" {
   source                 = "./modules/gcp/bigtable"

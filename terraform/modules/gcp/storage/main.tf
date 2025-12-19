@@ -30,3 +30,4 @@ resource "google_storage_bucket_object" "this" {
   depends_on = [google_storage_managed_folder.folder]
 }
 
+
