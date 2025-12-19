@@ -8,7 +8,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      PROJECT_ID: "carbon-hulling-480701-e8"
       REGION: "us-central1"
       REPO_NAME: "dataflow-repo"
       IMAGE_NAME: "streaming-beam-job"
@@ -31,7 +30,7 @@ jobs:
         id: cloud-build
         run: |
           TAG=$(git rev-parse --short HEAD)
-          IMAGE_URL="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:$TAG"
+          IMAGE_URL="${{ env.REGION }}-docker.pkg.dev/${{ env.GOOGLE_PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:$TAG"
           
           # Forçamos a indicação do arquivo caso ele seja minúsculo ou tenha outro nome
           gcloud builds submit --tag $IMAGE_URL .
