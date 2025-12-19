@@ -56,7 +56,6 @@ jobs:
           -var="image_tag=${{ env.IMAGE_TAG }}" \
           
       - name: "Terraform Destroy on Failure"
-        # Agora o GitHub sabe quem é o 'apply' e pode checar se ele falhou
         if: failure() && steps.apply.outcome == 'failure'
         working-directory: ./terraform 
         run: |
