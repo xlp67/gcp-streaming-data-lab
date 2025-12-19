@@ -7,6 +7,4 @@ variable "project_id" {
   default = "carbon-hulling-480701-e8"
 }
 
-variable "dataflow_container_spec_gcs_path" {}
-
 variable "image_tag" {}

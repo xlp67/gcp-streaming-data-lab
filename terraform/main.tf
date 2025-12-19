@@ -25,7 +25,7 @@ module "dataflow" {
   dataflow_subscription_id         = module.pubsub.pubsub_subscription_id
   region                          = var.region
   image_tag                       = var.image_tag
-  dataflow_container_spec_gcs_path = var.dataflow_container_spec_gcs_path
+  dataflow_container_spec_gcs_path = "gs://${module.storage_bucket.bucket_name}/templates/job-${var.image_tag}.json"
 }
 
 module "bigtable" {
