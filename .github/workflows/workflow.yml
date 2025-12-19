@@ -15,9 +15,6 @@ jobs:
       - name: "Checkout Code"
         uses: actions/checkout@v3
 
-      - name: "List files for debug"
-        run: ls -R
-        
       - name: "Authenticate to Google Cloud"
         uses: google-github-actions/auth@v1
         with:
@@ -29,12 +26,18 @@ jobs:
       - name: "Build and Push Image via Cloud Build"
         id: cloud-build
         run: |
+          # Pegamos o hash curto do commit
           TAG=$(git rev-parse --short HEAD)
+          
+          # USAMOS AS CHAVES DO GITHUB PARA GARANTIR QUE O VALOR NÃO VENHA VAZIO
           IMAGE_URL="${{ env.REGION }}-docker.pkg.dev/${{ env.GOOGLE_PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:$TAG"
           
-          # Forçamos a indicação do arquivo caso ele seja minúsculo ou tenha outro nome
-          gcloud builds submit --tag $IMAGE_URL .
+          echo "Building image: $IMAGE_URL"
           
+          # Executa o build (ajustado para aceitar dockerfile minúsculo se necessário)
+          gcloud builds submit --tag "$IMAGE_URL" .
+          
+          # Exporta para o Terraform
           echo "IMAGE_TAG=$TAG" >> $GITHUB_ENV
           echo "IMAGE_URL=$IMAGE_URL" >> $GITHUB_ENV
 
@@ -48,7 +51,8 @@ jobs:
         run: |
           terraform init
           terraform apply -auto-approve \
-            -var="project_id=${{ env.PROJECT_ID }}" \
+            -var="project_id=${{ env.GOOGLE_PROJECT_ID }}" \
             -var="region=${{ env.REGION }}" \
             -var="image_tag=${{ env.IMAGE_TAG }}" \
             -var="container_spec_gcs_path=gs://test-bucket-xlp67/templates/job-${{ env.IMAGE_TAG }}.json"
+
