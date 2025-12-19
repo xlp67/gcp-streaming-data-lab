@@ -26,20 +26,12 @@ jobs:
       - name: "Build and Push Image via Cloud Build"
         id: cloud-build
         run: |
-          # Pegamos o hash curto do commit
           TAG=$(git rev-parse --short HEAD)
-          
-          # USAMOS AS CHAVES DO GITHUB PARA GARANTIR QUE O VALOR NÃO VENHA VAZIO
           IMAGE_URL="${{ env.REGION }}-docker.pkg.dev/${{ env.GOOGLE_PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:$TAG"
-          
-          echo "Building image: $IMAGE_URL"
-          
-          # Executa o build (ajustado para aceitar dockerfile minúsculo se necessário)
+          echo "Building image in project: ${{ env.GOOGLE_PROJECT_ID }}"
+          echo "Full Image URL: $IMAGE_URL"
           gcloud builds submit --tag "$IMAGE_URL" .
-          
-          # Exporta para o Terraform
           echo "IMAGE_TAG=$TAG" >> $GITHUB_ENV
-          echo "IMAGE_URL=$IMAGE_URL" >> $GITHUB_ENV
 
 
       - name: "Setup Terraform"
