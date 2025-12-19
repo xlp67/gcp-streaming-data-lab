@@ -22,6 +22,36 @@ resource "google_service_account_key" "service_account_key" {
   private_key_type   = "TYPE_GOOGLE_CREDENTIALS_FILE"
 }
 
+resource "google_project_iam_member" "sa_storage_admin" {
+  project = var.project_id
+  role    = "roles/storage.admin"
+  member  = "serviceAccount:${google_service_account.service_account.email}"
+}
+
+resource "google_project_iam_member" "sa_cloudbuild_editor" {
+  project = var.project_id
+  role    = "roles/cloudbuild.builds.editor"
+  member  = "serviceAccount:${google_service_account.service_account.email}"
+}
+
+resource "google_project_iam_member" "sa_artifactregistry_writer" {
+  project = var.project_id
+  role    = "roles/artifactregistry.writer"
+  member  = "serviceAccount:${google_service_account.service_account.email}"
+}
+
+resource "google_project_iam_member" "sa_serviceusage_consumer" {
+  project = var.project_id
+  role    = "roles/serviceusage.serviceUsageConsumer"
+  member  = "serviceAccount:${google_service_account.service_account.email}"
+}
+
+resource "google_project_iam_member" "sa_iam_service_account_user" {
+  project = var.project_id
+  role    = "roles/iam.serviceAccountUser"
+  member  = "serviceAccount:${google_service_account.service_account.email}"
+}
+
 resource "local_file" "sa_key_file" {
   content  = base64decode(google_service_account_key.service_account_key.private_key)
   filename = "../config/credentials.json"
