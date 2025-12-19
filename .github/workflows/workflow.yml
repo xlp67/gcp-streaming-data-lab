@@ -27,7 +27,7 @@ jobs:
         id: cloud-build
         run: |
           TAG=$(git rev-parse --short HEAD)
-          IMAGE_URL="${{ env.REGION }}-docker.pkg.dev/${{ env.GOOGLE_PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:$TAG"
+          IMAGE_URL="${{ env.REGION }}-docker.pkg.dev${{ env.GOOGLE_PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:$TAG"
           echo "Building image in project: ${{ env.GOOGLE_PROJECT_ID }}"
           echo "Full Image URL: $IMAGE_URL"
           gcloud builds submit --tag "$IMAGE_URL" .
