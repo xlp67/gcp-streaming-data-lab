@@ -16,6 +16,9 @@ jobs:
       - name: "Checkout Code"
         uses: actions/checkout@v3
 
+      - name: "List files for debug"
+        run: ls -R
+        
       - name: "Authenticate to Google Cloud"
         uses: google-github-actions/auth@v1
         with:
@@ -27,16 +30,15 @@ jobs:
       - name: "Build and Push Image via Cloud Build"
         id: cloud-build
         run: |
-          # Pegamos o hash curto do commit para ser a nossa TAG única
           TAG=$(git rev-parse --short HEAD)
-          IMAGE_URL="$REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$IMAGE_NAME:$TAG"
+          IMAGE_URL="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:$TAG"
           
-          # Dispara o build no GCP usando o Dockerfile da raiz (./)
+          # Forçamos a indicação do arquivo caso ele seja minúsculo ou tenha outro nome
           gcloud builds submit --tag $IMAGE_URL .
           
-          # Exporta a TAG para os próximos passos
           echo "IMAGE_TAG=$TAG" >> $GITHUB_ENV
           echo "IMAGE_URL=$IMAGE_URL" >> $GITHUB_ENV
+
 
       - name: "Setup Terraform"
         uses: hashicorp/setup-terraform@v2
