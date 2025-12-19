@@ -23,11 +23,5 @@ resource "google_storage_managed_folder" "folder" {
   depends_on    = [google_storage_bucket.this]
 }
 
-resource "google_storage_bucket_object" "this" {
-  name       = "templates/google_dataflow_flex_template_job.json"
-  source     = "${path.module}/google_dataflow_flex_template_job.json"
-  bucket     = google_storage_bucket.this.name
-  depends_on = [google_storage_managed_folder.folder]
-}
 
 
