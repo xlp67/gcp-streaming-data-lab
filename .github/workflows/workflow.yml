@@ -37,13 +37,6 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.5.0
-      - name: "Create and Save Flex Template Spec"
-        run: |
-          TEMPLATE_PATH="gs://${{ vars.GOOGLE_PROJECT_ID }}-templates/templates/job-${{ env.IMAGE_TAG }}.json"
-          gcloud dataflow flex-template build $TEMPLATE_PATH \
-            --image="${{ env.REGION }}-docker.pkg.dev/${{ vars.GOOGLE_PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}" \
-            --sdk-language="PYTHON"
-          echo "TEMPLATE_GCS_PATH=$TEMPLATE_PATH" >> $GITHUB_ENV
 
       - name: "Terraform Init"
         working-directory: ./terraform 
@@ -60,3 +53,18 @@ jobs:
         run: |
           terraform apply -auto-approve \
           -var="image_tag=${{ env.IMAGE_TAG }}" 
+      
+      - name: "Terraform Destroy on Failure"
+        if: failure() && steps.apply.outcome == 'failure'
+        working-directory: ./terraform 
+        run: |
+          terraform destroy -auto-approve \
+          -var="image_tag=${{ env.IMAGE_TAG }}"
+
+      - name: "Create and Save Flex Template Spec"
+        run: |
+          TEMPLATE_PATH="gs://${{ vars.GOOGLE_PROJECT_ID }}/templates/job-${{ env.IMAGE_TAG }}.json"
+          gcloud dataflow flex-template build $TEMPLATE_PATH \
+            --image="${{ env.REGION }}-docker.pkg.dev/${{ vars.GOOGLE_PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}" \
+            --sdk-language="PYTHON"
+          echo "TEMPLATE_GCS_PATH=$TEMPLATE_PATH" >> $GITHUB_ENV
