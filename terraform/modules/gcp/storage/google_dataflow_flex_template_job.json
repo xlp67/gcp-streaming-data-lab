@@ -1,0 +1,11 @@
+{
+  "image": "gcr.io/dataflow-templates-base/python3-template-launcher-image",
+  "sdkInfo": {
+    "language": "PYTHON"
+  },
+  "metadata": {
+    "name": "Template Job",
+    "description": "Template for running a Dataflow job",
+    "parameters": []
+  }
+}
